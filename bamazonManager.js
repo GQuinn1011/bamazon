@@ -37,17 +37,20 @@ function inquirerForUpdates() {
         name: "action",
         type: "list",
         message: "Choose an option below to manage current inventory:",
-        choices: ["Restock Inventory", "Add New Product", "Remove An Existing Product", "Exit System"]
+        choices: ["Restock Inventory", "View Low Inventory", "Add New Product", "Remove An Existing Product", "Exit System"]
     }]).then(function(answers) {
         switch (answers.action) {
             case "Restock Inventory":
                 restockRequest();
                 break;
+            case "View Low Inventory":
+                LowInventory();
+                break;
             case "Add New Product":
-                addRequest();
+                addProduct();
                 break;
             case "Remove An Existing Product":
-                removeRequest();
+                removeProduct();
                 break;
             case "Exit System":
                 connection.end();
@@ -85,12 +88,34 @@ function restockRequest() {
     });
 };
 
+function LowInventory() {
+    connection.query(`SELECT * FROM products WHERE stock_quantity < 5 ORDER BY stock_quantity DESC`, (err, res) => {
+        if (res.length > 0) {
+            var lowInventoryTable = new Table({
+                head: ["ID #", "Product Name", "Price", "Quantity"],
+                colWidths: [7, 45, 10, 10]
+            });
 
-function addRequest() {
+            for (var i = 0; i < res.length; i++) {
+                lowInventoryTable.push([res[i].item_id, res[i].product_name, res[i].price, res[i].stock_quantity]);
+            }
+
+            console.log(lowInventoryTable.toString());
+            restockRequest();
+
+        } else {
+            console.log("\nNo products need restocking at this time!\n");
+            inquirerForUpdates();
+        }
+
+    });
+};
+
+function addProduct() {
     inquirer.prompt([{
             name: "Name",
             type: "input",
-            message: "What is name of product you would like to stock?"
+            message: "What is name of product you would like to add for sale?"
         },
         {
             name: "Department",
@@ -100,7 +125,7 @@ function addRequest() {
         {
             name: "Price",
             type: "input",
-            message: "What is the price for item?"
+            message: "What is the price of the product?"
         },
         {
             name: "Quantity",
@@ -119,11 +144,11 @@ function addRequest() {
     });
 }
 
-function removeRequest() {
+function removeProduct() {
     inquirer.prompt([{
         name: "ID",
         type: "input",
-        message: "What is the item number of the item you would like to remove?"
+        message: "What is the ID number of the product you would like to remove?"
     }]).then(function(answer) {
         var id = answer.ID;
         removeInventory(id);
