@@ -4,7 +4,7 @@
 
 Bamazon is a command line node app. It has 3 different command functions. You can shop as a customer, update inventory as a manager, and see cost analysis as a supervisor.
 
-Click here for a video demo of the working app:
+Click here for a video demo of the working app: https://drive.google.com/file/d/1p9cA3GoYEU8bf0kvTgSYAuq9XP60Wolo/view?usp=sharing
 
 ### Prerequisites
 
